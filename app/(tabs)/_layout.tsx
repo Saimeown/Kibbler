@@ -1,83 +1,135 @@
-import {View, Text, ImageBackground, Image} from 'react-native'
-import React from 'react'
-import {Tabs} from "expo-router";
-import {images} from "@/constants/images";
-import {icons} from "@/constants/icons";
+// app/_layout.tsx
+import { View, Image, Animated, Dimensions, ImageBackground } from 'react-native';
+import React, { useRef, useEffect } from 'react';
+import { Tabs } from 'expo-router';
+import { images } from '@/constants/images';
+import { icons } from '@/constants/icons';
 
-const TabIcon = ({ focused, icon, title }: any)=> {
-    if(focused) {
-        return (
-            <ImageBackground
-                source={images.highlight}
-                className="flex flex-row w-full flex-1 min-w-[112px] min-h-14 mt-4 justify-center items-center rounded-full overflow-hidden"
-            >
-                <Image source={icon}/>
-                <Text className="text-secondary text-base font-semibold ml-2">{title}</Text>
-            </ImageBackground>
-        )
+const { width } = Dimensions.get('window');
+const TAB_COUNT = 5;
+const TAB_WIDTH = (width - 40) / TAB_COUNT; // 40 = marginHorizontal*2
+
+type IconName =
+    | 'home-light' | 'home-dark'
+    | 'settings-light' | 'settings-dark'
+    | 'camera-light' | 'camera-dark'
+    | 'notification-light' | 'notification-dark'
+    | 'profile-light' | 'profile-dark';
+
+const getIconName = (routeName: string) => {
+    switch(routeName) {
+        case 'index': return 'home';
+        case 'settings': return 'settings';
+        case 'camera': return 'camera';
+        case 'notification': return 'notification';
+        case 'profile': return 'profile';
+        default: return 'home';
     }
+};
+
+const TabBar = ({ state, navigation }: any) => {
+    const highlightPosition = useRef(new Animated.Value(0)).current;
+
+    useEffect(() => {
+        const position = state.index * TAB_WIDTH;
+        Animated.spring(highlightPosition, {
+            toValue: position,
+            useNativeDriver: true,
+            speed: 20,
+            bounciness: 0,
+        }).start();
+    }, [state.index]);
 
     return (
-        <View className="size-full justify-center items-center mt-4 rounded-full">
-            <Image source={icon} tintColor="#A8B5DB" className="size-5"/>
+        <View style={{
+            flexDirection: 'row',
+            backgroundColor: '#000000',
+            borderRadius: 50,
+            marginHorizontal: 20,
+            marginBottom: 36,
+            height: 52,
+            position: 'absolute',
+            bottom: 0,
+            left: 0,
+            right: 0,
+            borderWidth: 1,
+            borderColor: '#0f0d23',
+            overflow: 'hidden',
+        }}>
+            {/* Animated Highlight - Icon Only */}
+            <Animated.View
+                style={{
+                    position: 'absolute',
+                    width: TAB_WIDTH,
+                    height: '100%',
+                    transform: [{ translateX: highlightPosition }],
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                }}
+            >
+                <ImageBackground
+                    source={images.highlight}
+                    style={{
+                        width: '100%',
+                        height: '100%',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                    }}
+                    resizeMode="cover"
+                >
+                    {state.routes[state.index] && (
+                        <Image
+                            source={icons[`${getIconName(state.routes[state.index].name)}-dark` as IconName]}
+                            style={{ width: 24, height: 24 }} // Slightly larger when active
+                        />
+                    )}
+                </ImageBackground>
+            </Animated.View>
+
+            {/* Tab Items - Icons Only */}
+            {state.routes.map((route: any, index: number) => {
+                const isFocused = state.index === index;
+                const iconName = getIconName(route.name);
+
+                return (
+                    <View
+                        key={route.key}
+                        style={{
+                            flex: 1,
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                        }}
+                        onTouchEnd={() => !isFocused && navigation.navigate(route.name)}
+                    >
+                        <Image
+                            source={icons[`${iconName}-${isFocused ? 'dark' : 'light'}` as IconName]}
+                            style={{
+                                width: isFocused ? 0 : 20, // Hide inactive icon (highlight shows active one)
+                                height: isFocused ? 0 : 20
+                            }}
+                        />
+                    </View>
+                );
+            })}
         </View>
-    )
-}
+    );
+};
 
 const _Layout = () => {
     return (
         <Tabs
+            tabBar={(props) => <TabBar {...props} />}
             screenOptions={{
-                tabBarShowLabel: false,
-                tabBarItemStyle: {
-                    width: '100%',
-                    height: '100%',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                },
-                tabBarStyle: {
-                    backgroundColor: '#0f0d23',
-                    borderRadius: 50,
-                    marginHorizontal: 20,
-                    marginBottom: 36,
-                    height: 52,
-                    position: 'absolute',
-                    overflow: 'hidden',
-                    borderWidth: 1,
-                    borderColor: '#0f0d23',
-                },
+                headerShown: false,
             }}
         >
-            <Tabs.Screen
-            name="index"
-            options={{
-                title: 'Home',
-                headerShown: false,
-                tabBarIcon: ({ focused }) => (
-                   <TabIcon
-                       focused={focused}
-                       icon={icons.home}
-                       title="Home"
-                   />
-                )
-            }}
-            />
-            <Tabs.Screen
-                name="settings"
-                options={{
-                    title: 'Settings',
-                    headerShown: false,
-                    tabBarIcon: ({ focused }) => (
-                        <TabIcon
-                            focused={focused}
-                            icon={icons.search}
-                            title="Settings"
-                        />
-                    )
-                }}
-            />
+            <Tabs.Screen name="index" />
+            <Tabs.Screen name="camera" />
+            <Tabs.Screen name="notification" />
+            <Tabs.Screen name="profile" />
+            <Tabs.Screen name="settings" />
         </Tabs>
-    )
-}
+    );
+};
 
-export default _Layout
+export default _Layout;
