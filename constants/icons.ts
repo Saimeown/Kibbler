@@ -31,6 +31,8 @@ export type IconName =
     | 'preferences'
     | 'moon'
     | 'message'
+    | 'calendar'
+    | 'trending-up';
 
 // 2. Create the icons object using require()
 export const icons: Record<IconName, any> = {
@@ -70,6 +72,8 @@ export const icons: Record<IconName, any> = {
   'preferences': require('@/assets/icons/preferences.png'),
   'moon': require('@/assets/icons/moon.png'),
   'message': require('@/assets/icons/message.png'),
+  'calendar': require('@/assets/icons/calendar.png'),
+  "trending-up": require('@/assets/icons/trending-up.png'),
 
 
 

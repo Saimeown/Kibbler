@@ -52,7 +52,7 @@ export default function SettingsTab() {
 
     const settingsSections: SettingsSection[] = [
         {
-            title: "Device SettingsTab",
+            title: "Device Settings",
             icon: icons['settings-light'],
             items: [
                 {
@@ -77,7 +77,7 @@ export default function SettingsTab() {
                 },
                 {
                     id: 3,
-                    title: "Dispensing SettingsTab",
+                    title: "Dispensing Settings",
                     icon: icons['food-bowl'],
                     action: () => navigation.navigate('settings', {
                         screen: 'dispenseSettings',
@@ -112,7 +112,7 @@ export default function SettingsTab() {
             ]
         },
         {
-            title: "Alert SettingsTab",
+            title: "Alert Settings",
             icon: icons['warning'],
             items: [
                 {

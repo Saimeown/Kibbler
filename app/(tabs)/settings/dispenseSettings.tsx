@@ -58,7 +58,6 @@ export default function DispenseSettings() {
         }
     };
 
-    // Save settings
     const saveSettings = async () => {
         try {
             if (mode === 'detection') {
@@ -79,7 +78,6 @@ export default function DispenseSettings() {
         }
     };
 
-    // Load saved settings on mount
     useEffect(() => {
         const loadSettings = async () => {
             try {
@@ -106,7 +104,7 @@ export default function DispenseSettings() {
         <View style={styles.container}>
             <ScrollView contentContainerStyle={styles.scrollContainer}>
                 <Text style={styles.header}>
-                    {mode === 'detection' ? 'Detection-Based' : 'Scheduled'} Dispensing
+                    {mode === 'detection' ? 'Detection-Based' : 'Scheduled'}
                 </Text>
 
                 {mode === 'detection' ? (
@@ -116,18 +114,23 @@ export default function DispenseSettings() {
                             <Text style={styles.settingDescription}>
                                 How many times to dispense when an RFID tag is detected
                             </Text>
-                            <Picker
-                                selectedValue={detectionSettings.dispensesPerDetection.toString()}
-                                onValueChange={(itemValue: string) =>
-                                    setDetectionSettings(prev => ({
-                                        ...prev,
-                                        dispensesPerDetection: parseInt(itemValue, 10)
-                                    }))
-                                }>
-                                {[1, 2, 3, 4, 5].map(num => (
-                                    <Picker.Item key={num} label={`${num} time${num > 1 ? 's' : ''}`} value={num.toString()} />
-                                ))}
-                            </Picker>
+                            <View style={styles.pickerContainer}>
+                                <Picker
+                                    style={styles.picker}
+                                    mode="dropdown"
+                                    dropdownIconColor="#000000"
+                                    selectedValue={detectionSettings.dispensesPerDetection.toString()}
+                                    onValueChange={(itemValue: string) => {
+                                        setDetectionSettings(prev => ({
+                                            ...prev,
+                                            dispensesPerDetection: parseInt(itemValue, 10)
+                                        }));
+                                    }}>
+                                    {[1, 2, 3, 4, 5].map(num => (
+                                        <Picker.Item key={num} label={`${num} time${num > 1 ? 's' : ''}`} value={num.toString()} />
+                                    ))}
+                                </Picker>
+                            </View>
                         </View>
 
                         <View style={styles.settingItem}>
@@ -135,18 +138,23 @@ export default function DispenseSettings() {
                             <Text style={styles.settingDescription}>
                                 Minutes to wait between each dispense
                             </Text>
-                            <Picker
-                                selectedValue={detectionSettings.timeGap.toString()}
-                                onValueChange={(itemValue: string) =>
-                                    setDetectionSettings(prev => ({
-                                        ...prev,
-                                        timeGap: parseInt(itemValue, 10)
-                                    }))
-                                }>
-                                {[1, 2, 3, 5, 10, 15, 20, 30].map(min => (
-                                    <Picker.Item key={min} label={`${min} minute${min > 1 ? 's' : ''}`} value={min.toString()} />
-                                ))}
-                            </Picker>
+                            <View style={styles.pickerContainer}>
+                                <Picker
+                                    style={styles.picker}
+                                    mode="dropdown"
+                                    dropdownIconColor="#000000"
+                                    selectedValue={detectionSettings.timeGap.toString()}
+                                    onValueChange={(itemValue: string) => {
+                                        setDetectionSettings(prev => ({
+                                            ...prev,
+                                            timeGap: parseInt(itemValue, 10)
+                                        }));
+                                    }}>
+                                    {[1, 2, 3, 5, 10, 15, 20, 30].map(min => (
+                                        <Picker.Item key={min} label={`${min} minute${min > 1 ? 's' : ''}`} value={min.toString()} />
+                                    ))}
+                                </Picker>
+                            </View>
                         </View>
                     </>
                 ) : (
@@ -156,18 +164,23 @@ export default function DispenseSettings() {
                             <Text style={styles.settingDescription}>
                                 How many times to dispense food each day
                             </Text>
-                            <Picker
-                                selectedValue={scheduledSettings.dailyDispenses.toString()}
-                                onValueChange={(itemValue: string) =>
-                                    setScheduledSettings(prev => ({
-                                        ...prev,
-                                        dailyDispenses: parseInt(itemValue, 10)
-                                    }))
-                                }>
-                                {[1, 2, 3, 4, 5, 6].map(num => (
-                                    <Picker.Item key={num} label={`${num} time${num > 1 ? 's' : ''}`} value={num.toString()} />
-                                ))}
-                            </Picker>
+                            <View style={styles.pickerContainer}>
+                                <Picker
+                                    style={styles.picker}
+                                    mode="dropdown"
+                                    dropdownIconColor="#000000"
+                                    selectedValue={scheduledSettings.dailyDispenses.toString()}
+                                    onValueChange={(itemValue: string) => {
+                                        setScheduledSettings(prev => ({
+                                            ...prev,
+                                            dailyDispenses: parseInt(itemValue, 10)
+                                        }));
+                                    }}>
+                                    {[1, 2, 3, 4, 5, 6].map(num => (
+                                        <Picker.Item key={num} label={`${num} time${num > 1 ? 's' : ''}`} value={num.toString()} />
+                                    ))}
+                                </Picker>
+                            </View>
                         </View>
 
                         <View style={styles.settingItem}>
@@ -175,25 +188,29 @@ export default function DispenseSettings() {
                             <Text style={styles.settingDescription}>
                                 When the first daily dispense should occur
                             </Text>
-                            <TouchableOpacity
-                                style={styles.timePickerButton}
-                                onPress={() => setShowTimePicker(true)}>
-                                <Text style={styles.timeText}>
-                                    {scheduledSettings.firstDispenseTime.toLocaleTimeString([], {
-                                        hour: '2-digit',
-                                        minute: '2-digit'
-                                    })}
-                                </Text>
-                            </TouchableOpacity>
-                            {showTimePicker && (
-                                <DateTimePicker
-                                    value={scheduledSettings.firstDispenseTime}
-                                    mode="time"
-                                    is24Hour={false}
-                                    display="default"
-                                    onChange={onChangeTime}
-                                />
-                            )}
+                            <View style={styles.timePickerContainer}>
+                                <TouchableOpacity
+                                    style={styles.timePickerButton}
+                                    onPress={() => setShowTimePicker(true)}>
+                                    <Text style={styles.timeText}>
+                                        {scheduledSettings.firstDispenseTime.toLocaleTimeString([], {
+                                            hour: '2-digit',
+                                            minute: '2-digit'
+                                        })}
+                                    </Text>
+                                </TouchableOpacity>
+                                {showTimePicker && (
+                                    <DateTimePicker
+                                        value={scheduledSettings.firstDispenseTime}
+                                        mode="time"
+                                        is24Hour={false}
+                                        display="spinner"
+                                        onChange={onChangeTime}
+                                        themeVariant="dark"
+                                        style={styles.dateTimePicker}
+                                    />
+                                )}
+                            </View>
                         </View>
 
                         <View style={styles.settingItem}>
@@ -201,18 +218,23 @@ export default function DispenseSettings() {
                             <Text style={styles.settingDescription}>
                                 Hours to wait between each dispense
                             </Text>
-                            <Picker
-                                selectedValue={scheduledSettings.timeGap.toString()}
-                                onValueChange={(itemValue: string) =>
-                                    setScheduledSettings(prev => ({
-                                        ...prev,
-                                        timeGap: parseInt(itemValue, 10)
-                                    }))
-                                }>
-                                {[1, 2, 3, 4, 6, 8, 12].map(hour => (
-                                    <Picker.Item key={hour} label={`${hour} hour${hour > 1 ? 's' : ''}`} value={hour.toString()} />
-                                ))}
-                            </Picker>
+                            <View style={styles.pickerContainer}>
+                                <Picker
+                                    style={styles.picker}
+                                    mode="dropdown"
+                                    dropdownIconColor="#000000"
+                                    selectedValue={scheduledSettings.timeGap.toString()}
+                                    onValueChange={(itemValue: string) => {
+                                        setScheduledSettings(prev => ({
+                                            ...prev,
+                                            timeGap: parseInt(itemValue, 10)
+                                        }));
+                                    }}>
+                                    {[1, 2, 3, 4, 6, 8, 12].map(hour => (
+                                        <Picker.Item key={hour} label={`${hour} hour${hour > 1 ? 's' : ''}`} value={hour.toString()} />
+                                    ))}
+                                </Picker>
+                            </View>
                         </View>
                     </>
                 )}
@@ -229,17 +251,17 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#FFFBEB',
-        paddingTop: 60,
+        paddingTop: 40,
     },
     scrollContainer: {
         padding: 24,
         paddingBottom: 80,
     },
     header: {
-        fontSize: 24,
+        fontSize: 30,
         fontWeight: 'bold',
         color: '#0f0d23',
-        marginBottom: 24,
+        marginBottom: 40,
     },
     settingItem: {
         marginBottom: 24,
@@ -263,22 +285,48 @@ const styles = StyleSheet.create({
         color: '#6b7280',
         marginBottom: 12,
     },
-    timePickerButton: {
-        backgroundColor: '#f3f4f6',
-        padding: 12,
-        borderRadius: 8,
+    pickerContainer: {
+        height: 50,
+        overflow: 'hidden',
+        borderRadius: 50,
+        backgroundColor: '#000000',
+        justifyContent: 'center',
+    },
+    picker: {
+        width: '100%',
+        color: '#ffffff',
+    },
+    timePickerContainer: {
         alignItems: 'center',
+        justifyContent: 'center',
+    },
+    timePickerButton: {
+        backgroundColor: '#000000',
+        padding: 12,
+        borderRadius: 50,
+        alignItems: 'center',
+        width: '100%',
     },
     timeText: {
-        fontSize: 16,
-        color: '#0f0d23',
+        fontSize: 20,
+        color: '#bdbdbd',
+        fontWeight: '400',
+    },
+    dateTimePicker: {
+        backgroundColor: '#000000',
+        width: '100%',
+        borderRadius: 20,
+        marginTop: 16,
     },
     saveButton: {
         backgroundColor: '#000000',
         padding: 16,
-        borderRadius: 12,
+        borderRadius: 50,
         alignItems: 'center',
         marginTop: 16,
+        width: 200,
+        marginLeft: 'auto',
+        marginRight: 'auto',
     },
     saveButtonText: {
         color: '#ffd28e',

@@ -1,5 +1,4 @@
-// app/index.tsx
-import { View, Text, StyleSheet, Image, StatusBar } from 'react-native';
+import { View, Text, StyleSheet, Image, StatusBar, ScrollView } from 'react-native';
 import React from 'react';
 import { icons } from '@/constants/icons';
 
@@ -72,18 +71,25 @@ export default function Index() {
     };
 
     return (
-        <View style={styles.container}>
+        <ScrollView style={styles.container}>
             <StatusBar barStyle="dark-content" />
 
             <View style={styles.header}>
                 <Text style={styles.headerTitle}>Home</Text>
             </View>
 
+            {/* Status Cards */}
             <View style={styles.topRow}>
                 <View style={[styles.card, styles.smallCard]}>
-                    <Text style={styles.cardTitle}>
-                        {feederData.powerSource === 'wall' ? 'Wall Power' : 'Battery'}
-                    </Text>
+                    <View style={styles.cardHeader}>
+                        <Image
+                            source={feederData.powerSource === 'wall' ? icons['power-adapter'] : icons['battery']}
+                            style={[styles.cardIcon, { tintColor: '#ffd28e' }]}
+                        />
+                        <Text style={styles.cardTitle}>
+                            {feederData.powerSource === 'wall' ? 'Wall Power' : 'Battery'}
+                        </Text>
+                    </View>
                     <CircularProgress
                         percentage={feederData.powerSource === 'wall' ? 100 : feederData.batteryLevel}
                         color={feederData.batteryLevel < 20 ? '#ef4444' : '#ffd28e'}
@@ -93,7 +99,10 @@ export default function Index() {
                 </View>
 
                 <View style={[styles.card, styles.smallCard]}>
-                    <Text style={styles.cardTitle}>Food Container</Text>
+                    <View style={styles.cardHeader}>
+                        <Image source={icons['food-bowl']} style={[styles.cardIcon, { tintColor: '#ffd28e' }]} />
+                        <Text style={styles.cardTitle}>Food Container</Text>
+                    </View>
                     <CircularProgress
                         percentage={feederData.foodLevel}
                         color={feederData.foodLevel < 20 ? '#ef4444' : '#ffd28e'}
@@ -103,6 +112,7 @@ export default function Index() {
                 </View>
             </View>
 
+            {/* Feeding Stats Card */}
             <View style={[styles.card, { marginBottom: 16 }]}>
                 <View style={styles.cardHeader}>
                     <Image source={icons['feeding-stats']} style={[styles.icon, { tintColor: '#ffd28e' }]} />
@@ -110,26 +120,25 @@ export default function Index() {
                 </View>
 
                 <View style={styles.statsGrid}>
-                    <View style={styles.statItem}>
-                        <Text style={styles.statLabel}>Pets</Text>
-                        <Text style={styles.statValue}>{feederData.uniquePetsFed}</Text>
-                    </View>
-                    <View style={styles.statItem}>
-                        <Text style={styles.statLabel}>Today</Text>
-                        <Text style={styles.statValue}>{feederData.feedingsToday}</Text>
-                    </View>
-                    <View style={styles.statItem}>
-                        <Text style={styles.statLabel}>Avg/Day</Text>
-                        <Text style={styles.statValue}>{feederData.averageDailyFeedings}</Text>
-                    </View>
-                    <View style={styles.statItem}>
-                        <Text style={styles.statLabel}>Last Fed</Text>
-                        <Text style={styles.statValue}>{feederData.lastFed}</Text>
-                    </View>
+                    {[
+                        { label: 'Pets', value: feederData.uniquePetsFed, icon: icons['paw'] },
+                        { label: 'Today', value: feederData.feedingsToday, icon: icons['calendar'] },
+                        { label: 'Avg/Day', value: feederData.averageDailyFeedings, icon: icons['trending-up'] },
+                        { label: 'Last Fed', value: feederData.lastFed, icon: icons['clock'] }
+                    ].map((stat, index) => (
+                        <View key={index} style={styles.statItem}>
+                            <View style={styles.statIconContainer}>
+                                <Image source={stat.icon} style={[styles.statIcon, { tintColor: '#ffd28e' }]} />
+                            </View>
+                            <Text style={styles.statLabel}>{stat.label}</Text>
+                            <Text style={styles.statValue}>{stat.value}</Text>
+                        </View>
+                    ))}
                 </View>
             </View>
 
-            <View style={[styles.card, { marginBottom: 16 }]}>
+            {/* Recent Activity Card */}
+            <View style={[styles.card, { marginBottom: 24 }]}>
                 <View style={styles.cardHeader}>
                     <Image source={icons['notification-light']} style={[styles.icon, { tintColor: '#ffd28e' }]} />
                     <Text style={styles.cardHeaderText}>Recent Activity</Text>
@@ -137,12 +146,15 @@ export default function Index() {
 
                 {feederData.notifications.map((item) => (
                     <View key={item.id} style={styles.notificationItem}>
-                        <Text style={styles.notificationText}>{item.text}</Text>
-                        <Text style={styles.notificationTime}>{item.time}</Text>
+                        <View style={styles.notificationDot} />
+                        <View style={styles.notificationContent}>
+                            <Text style={styles.notificationText}>{item.text}</Text>
+                            <Text style={styles.notificationTime}>{item.time}</Text>
+                        </View>
                     </View>
                 ))}
             </View>
-        </View>
+        </ScrollView>
     );
 }
 
@@ -151,7 +163,8 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: '#FFFBEB',
         padding: 24,
-        paddingTop: 60
+        paddingTop: 60,
+        marginBottom: 80,
     },
     header: {
         marginBottom: 24,
@@ -170,10 +183,11 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         marginBottom: 16,
+        gap: 16,
     },
     card: {
         backgroundColor: '#000000',
-        borderRadius: 30,
+        borderRadius: 20,
         padding: 20,
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 4 },
@@ -182,29 +196,33 @@ const styles = StyleSheet.create({
         elevation: 6,
     },
     smallCard: {
-        width: '48%',
+        flex: 1,
         alignItems: 'center',
     },
     cardHeader: {
         flexDirection: 'row',
         alignItems: 'center',
         marginBottom: 16,
-        paddingHorizontal: 4,
+    },
+    cardIcon: {
+        width: 20,
+        height: 20,
+        marginRight: 8,
     },
     cardHeaderText: {
         fontSize: 18,
         color: '#ffd28e',
-        marginLeft: 12,
+        fontWeight: '600',
+        marginLeft: 8,
     },
     cardTitle: {
-        fontSize: 18,
+        fontSize: 16,
         color: '#ffd28e',
-        marginBottom: 16,
-        textAlign: 'center',
+        fontWeight: '600',
     },
     icon: {
-        width: 24,
-        height: 24,
+        width: 20,
+        height: 20,
     },
     circleWrapper: {
         alignItems: 'center',
@@ -248,38 +266,68 @@ const styles = StyleSheet.create({
     },
     statsGrid: {
         flexDirection: 'row',
+        flexWrap: 'wrap',
         justifyContent: 'space-between',
+        gap: 12,
     },
     statItem: {
-        flex: 1,
+        width: '48%',
+        backgroundColor: '#1a1a1a',
+        borderRadius: 12,
+        padding: 16,
         alignItems: 'center',
-        paddingHorizontal: 4,
+    },
+    statIconContainer: {
+        backgroundColor: '#2a2741',
+        width: 40,
+        height: 40,
+        borderRadius: 20,
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginBottom: 25,
+    },
+    statIcon: {
+        width: 18,
+        height: 18,
     },
     statLabel: {
         color: '#9ca3af',
-        fontSize: 14,
+        fontSize: 12,
         marginBottom: 4,
-        marginRight: 10,
     },
     statValue: {
         color: '#ffd28e',
-        fontSize: 14,
-        fontWeight: 400,
-        marginRight: 10,
+        fontSize: 18,
+        fontWeight: '600',
     },
     notificationItem: {
         flexDirection: 'row',
-        justifyContent: 'space-between',
+        alignItems: 'center',
         paddingVertical: 12,
         borderBottomWidth: 1,
         borderBottomColor: '#2a2741',
     },
+    notificationDot: {
+        width: 8,
+        height: 8,
+        borderRadius: 4,
+        backgroundColor: '#ffd28e',
+        marginRight: 12,
+    },
+    notificationContent: {
+        flex: 1,
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+    },
     notificationText: {
-        color: '#9ca3af',
+        color: '#e5e7eb',
+        fontSize: 14,
         flex: 1,
     },
     notificationTime: {
-        color: '#ffd28e',
+        color: '#9ca3af',
         fontSize: 12,
+        marginLeft: 8,
     }
 });
