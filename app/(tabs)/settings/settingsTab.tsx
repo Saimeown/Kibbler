@@ -5,10 +5,15 @@ import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 
 type RootStackParamList = {
-    DispenseSettings: { mode: 'detection' | 'scheduled' };
+    '(tabs)': undefined;
+    'settings': {
+        screen: 'dispenseSettings';
+        params: { mode: 'detection' | 'scheduled' };
+    };
+    profile: undefined;
 };
 
-type SettingsNavigationProp = StackNavigationProp<RootStackParamList>;
+type SettingsNavigationProp = StackNavigationProp<RootStackParamList, '(tabs)'>;
 
 type SettingItemBase = {
     id: number;
@@ -36,7 +41,7 @@ type SettingsSection = {
     items: SettingItem[];
 };
 
-export default function Settings() {
+export default function SettingsTab() {
     const navigation = useNavigation<SettingsNavigationProp>();
     const [notificationsEnabled, setNotificationsEnabled] = useState(true);
     const [darkModeEnabled, setDarkModeEnabled] = useState(false);
@@ -47,7 +52,7 @@ export default function Settings() {
 
     const settingsSections: SettingsSection[] = [
         {
-            title: "Device Settings",
+            title: "Device SettingsTab",
             icon: icons['settings-light'],
             items: [
                 {
@@ -72,9 +77,12 @@ export default function Settings() {
                 },
                 {
                     id: 3,
-                    title: "Dispensing Settings",
+                    title: "Dispensing SettingsTab",
                     icon: icons['food-bowl'],
-                    action: () => navigation.navigate('DispenseSettings', { mode: dispensingMode }),
+                    action: () => navigation.navigate('settings', {
+                        screen: 'dispenseSettings',
+                        params: { mode: dispensingMode }
+                    }),
                     hasChevron: true
                 }
             ]
@@ -104,7 +112,7 @@ export default function Settings() {
             ]
         },
         {
-            title: "Alert Settings",
+            title: "Alert SettingsTab",
             icon: icons['warning'],
             items: [
                 {
@@ -191,7 +199,16 @@ export default function Settings() {
                         <View style={styles.sectionCard}>
                             {section.items.map((item) => (
                                 <React.Fragment key={item.id}>
-                                    <TouchableOpacity style={styles.settingItem} onPress={item.action}>
+                                    <TouchableOpacity
+                                        style={styles.settingItem}
+                                        onPress={() => {
+                                            if ('isToggle' in item && item.isToggle) {
+                                                item.onChange(!item.value);
+                                            } else {
+                                                item.action();
+                                            }
+                                        }}
+                                    >
                                         <View style={styles.settingLeft}>
                                             <Image source={item.icon} style={styles.settingIcon} />
                                             <View>
@@ -234,7 +251,7 @@ const styles = StyleSheet.create({
     header: {
         paddingTop: 60,
         paddingHorizontal: 24,
-        paddingBottom: 35,
+        paddingBottom: 16,
         backgroundColor: '#FFFBEB',
         zIndex: 10,
     },

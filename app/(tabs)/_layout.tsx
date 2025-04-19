@@ -1,4 +1,3 @@
-// app/_layout.tsx
 import { View, Image, Animated, Dimensions, ImageBackground } from 'react-native';
 import React, { useRef, useEffect } from 'react';
 import { Tabs } from 'expo-router';
@@ -7,7 +6,7 @@ import { icons } from '@/constants/icons';
 
 const { width } = Dimensions.get('window');
 const TAB_COUNT = 5;
-const TAB_WIDTH = (width - 40) / TAB_COUNT; // 40 = marginHorizontal*2
+const TAB_WIDTH = (width - 40) / TAB_COUNT;
 
 type IconName =
     | 'home-light' | 'home-dark'
@@ -56,7 +55,6 @@ const TabBar = ({ state, navigation }: any) => {
             borderColor: '#0f0d23',
             overflow: 'hidden',
         }}>
-            {/* Animated Highlight - Icon Only */}
             <Animated.View
                 style={{
                     position: 'absolute',
@@ -80,13 +78,12 @@ const TabBar = ({ state, navigation }: any) => {
                     {state.routes[state.index] && (
                         <Image
                             source={icons[`${getIconName(state.routes[state.index].name)}-dark` as IconName]}
-                            style={{ width: 24, height: 24 }} // Slightly larger when active
+                            style={{ width: 24, height: 24 }}
                         />
                     )}
                 </ImageBackground>
             </Animated.View>
 
-            {/* Tab Items - Icons Only */}
             {state.routes.map((route: any, index: number) => {
                 const isFocused = state.index === index;
                 const iconName = getIconName(route.name);
@@ -104,7 +101,7 @@ const TabBar = ({ state, navigation }: any) => {
                         <Image
                             source={icons[`${iconName}-${isFocused ? 'dark' : 'light'}` as IconName]}
                             style={{
-                                width: isFocused ? 0 : 20, // Hide inactive icon (highlight shows active one)
+                                width: isFocused ? 0 : 20,
                                 height: isFocused ? 0 : 20
                             }}
                         />
@@ -115,7 +112,7 @@ const TabBar = ({ state, navigation }: any) => {
     );
 };
 
-const _Layout = () => {
+export default function TabsLayout() {
     return (
         <Tabs
             tabBar={(props) => <TabBar {...props} />}
@@ -130,6 +127,4 @@ const _Layout = () => {
             <Tabs.Screen name="settings" />
         </Tabs>
     );
-};
-
-export default _Layout;
+}

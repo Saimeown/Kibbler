@@ -143,7 +143,7 @@ export default function Profile() {
                     <Text style={styles.addButtonText}>Connect New Feeder</Text>
                 </TouchableOpacity>
 
-                {/* App Settings Section */}
+                {/* App SettingsTab Section */}
                 <Text style={styles.sectionTitle}>App Settings</Text>
                 <View style={styles.settingsCard}>
                     <TouchableOpacity style={styles.settingItem}>
