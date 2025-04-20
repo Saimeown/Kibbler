@@ -1,11 +1,12 @@
 import { View, Text, StyleSheet, Image, StatusBar, ScrollView } from 'react-native';
 import React from 'react';
 import { icons } from '@/constants/icons';
+import { useAuth } from '@/hooks/useAuth';
+import { Redirect } from 'expo-router';
 
 type CircularProgressProps = {
     percentage: number;
     color: string;
-    icon: any;
     label: string;
 };
 
@@ -27,14 +28,21 @@ type FeederData = {
 };
 
 export default function Index() {
+    const { isAuthenticated } = useAuth();
+
+    // Redirect to login if not authenticated
+    if (!isAuthenticated) {
+        return <Redirect href="/login" />;
+    }
+
     const feederData: FeederData = {
         powerSource: 'battery',
         batteryLevel: 78,
-        foodLevel: 30,
+        foodLevel: 65,
         uniquePetsFed: 3,
         feedingsToday: 12,
         averageDailyFeedings: 15,
-        lastFed: '2h ago',
+        lastFed: '3m ago',
         notifications: [
             { id: 1, text: '#00623F4E1B was fed 30 mins ago', time: '30m' },
             { id: 2, text: 'Food level below 50%', time: '2h' },
@@ -42,7 +50,10 @@ export default function Index() {
         ]
     };
 
-    const CircularProgress = ({ percentage, color, icon, label }: CircularProgressProps) => {
+    const CircularProgress = ({ percentage, color, label }: CircularProgressProps) => {
+        const rotation = -90 + (percentage * 3.6);
+        const secondaryRotation = percentage > 50 ? 180 : 0;
+
         return (
             <View style={styles.circleWrapper}>
                 <View style={styles.circleContainer}>
@@ -51,18 +62,28 @@ export default function Index() {
                         styles.circleProgress,
                         {
                             borderColor: color,
-                            transform: [{ rotate: '45deg' }],
+                            transform: [{ rotate: `${rotation}deg` }],
                             borderWidth: 10,
-                            borderLeftColor: 'transparent',
-                            borderBottomColor: 'transparent'
+                            borderLeftColor: percentage > 50 ? color : 'transparent',
+                            borderBottomColor: 'transparent',
+                            borderRightColor: 'transparent'
                         }
                     ]} />
-                    <Image
-                        source={icon}
-                        style={[styles.circleIcon, { tintColor: color }]}
-                    />
+                    {percentage > 50 && (
+                        <View style={[
+                            styles.circleProgress,
+                            {
+                                borderColor: color,
+                                transform: [{ rotate: `${secondaryRotation}deg` }],
+                                borderWidth: 10,
+                                borderLeftColor: 'transparent',
+                                borderBottomColor: 'transparent',
+                                borderRightColor: 'transparent'
+                            }
+                        ]} />
+                    )}
+                    <Text style={[styles.circlePercentage, { color }]}>{percentage}%</Text>
                 </View>
-                <Text style={[styles.percentageText, { color }]}>{percentage}%</Text>
                 <Text style={[styles.statusText, { color: percentage < 20 ? '#ef4444' : color }]}>
                     {percentage < 20 ? 'Low!' : label}
                 </Text>
@@ -71,113 +92,192 @@ export default function Index() {
     };
 
     return (
-        <ScrollView style={styles.container}>
-            <StatusBar barStyle="dark-content" />
+        <View style={styles.backgroundContainer}>
+            {/* Subtle background elements */}
+            <Image
+                source={icons['paw']}
+                style={[styles.backgroundPaw, styles.paw1]}
+                resizeMode="contain"
+            />
+            <Image
+                source={icons['paw']}
+                style={[styles.backgroundPaw, styles.paw2]}
+                resizeMode="contain"
+            />
+            <Image
+                source={icons['paw']}
+                style={[styles.backgroundPaw, styles.paw3]}
+                resizeMode="contain"
+            />
+            <Image
+                source={icons['paw']}
+                style={[styles.backgroundPaw, styles.paw4]}
+                resizeMode="contain"
+            />
+            <Image
+                source={icons['paw']}
+                style={[styles.backgroundPaw, styles.paw5]}
+                resizeMode="contain"
+            />
 
-            <View style={styles.header}>
+            {/* Fixed Header */}
+            <View style={styles.fixedHeader}>
                 <Text style={styles.headerTitle}>Home</Text>
             </View>
 
-            {/* Status Cards */}
-            <View style={styles.topRow}>
-                <View style={[styles.card, styles.smallCard]}>
-                    <View style={styles.cardHeader}>
-                        <Image
-                            source={feederData.powerSource === 'wall' ? icons['power-adapter'] : icons['battery']}
-                            style={[styles.cardIcon, { tintColor: '#ffd28e' }]}
+            {/* Scrollable Content */}
+            <ScrollView
+                style={styles.container}
+                contentContainerStyle={styles.scrollContent}
+                showsVerticalScrollIndicator={false}
+            >
+                <StatusBar barStyle="dark-content" />
+
+                {/* Status Cards */}
+                <View style={styles.topRow}>
+                    <View style={[styles.card, styles.smallCard]}>
+                        <View style={[styles.cardHeader, { marginTop: 5 }]}>
+                            <Image
+                                source={feederData.powerSource === 'wall' ? icons['power-adapter'] : icons['battery']}
+                                style={[styles.cardIcon, { tintColor: '#e67c00' }]}
+                            />
+                            <Text style={styles.cardTitle}>
+                                {feederData.powerSource === 'wall' ? 'Wall Power' : 'Battery'}
+                            </Text>
+                        </View>
+                        <CircularProgress
+                            percentage={feederData.powerSource === 'wall' ? 100 : feederData.batteryLevel}
+                            color={feederData.batteryLevel < 20 ? '#ef4444' : '#e67c00'}
+                            label={feederData.powerSource === 'wall' ? 'Connected' : 'Remaining'}
                         />
-                        <Text style={styles.cardTitle}>
-                            {feederData.powerSource === 'wall' ? 'Wall Power' : 'Battery'}
-                        </Text>
                     </View>
-                    <CircularProgress
-                        percentage={feederData.powerSource === 'wall' ? 100 : feederData.batteryLevel}
-                        color={feederData.batteryLevel < 20 ? '#ef4444' : '#ffd28e'}
-                        icon={feederData.powerSource === 'wall' ? icons['power-adapter'] : icons['battery']}
-                        label={feederData.powerSource === 'wall' ? 'Connected' : 'Remaining'}
-                    />
+
+                    <View style={[styles.card, styles.smallCard]}>
+                        <View style={[styles.cardHeader, { marginTop: 5 }]}>
+                            <Image source={icons['food-bowl']} style={[styles.cardIcon, { tintColor: '#e67c00' }]} />
+                            <Text style={styles.cardTitle}>Container</Text>
+                        </View>
+                        <CircularProgress
+                            percentage={feederData.foodLevel}
+                            color={feederData.foodLevel < 20 ? '#ef4444' : '#e67c00'}
+                            label="Food Level"
+                        />
+                    </View>
                 </View>
 
-                <View style={[styles.card, styles.smallCard]}>
+                {/* Feeding Stats Card */}
+                <View style={[styles.card, { marginBottom: 16 }]}>
                     <View style={styles.cardHeader}>
-                        <Image source={icons['food-bowl']} style={[styles.cardIcon, { tintColor: '#ffd28e' }]} />
-                        <Text style={styles.cardTitle}>Food Container</Text>
+                        <Image source={icons['feeding-stats']} style={[styles.icon, { tintColor: '#e67c00' }]} />
+                        <Text style={styles.cardHeaderText}>Feeding Statistics</Text>
                     </View>
-                    <CircularProgress
-                        percentage={feederData.foodLevel}
-                        color={feederData.foodLevel < 20 ? '#ef4444' : '#ffd28e'}
-                        icon={icons['food-bowl']}
-                        label="Level"
-                    />
-                </View>
-            </View>
 
-            {/* Feeding Stats Card */}
-            <View style={[styles.card, { marginBottom: 16 }]}>
-                <View style={styles.cardHeader}>
-                    <Image source={icons['feeding-stats']} style={[styles.icon, { tintColor: '#ffd28e' }]} />
-                    <Text style={styles.cardHeaderText}>Feeding Stats</Text>
-                </View>
-
-                <View style={styles.statsGrid}>
-                    {[
-                        { label: 'Pets', value: feederData.uniquePetsFed, icon: icons['paw'] },
-                        { label: 'Today', value: feederData.feedingsToday, icon: icons['calendar'] },
-                        { label: 'Avg/Day', value: feederData.averageDailyFeedings, icon: icons['trending-up'] },
-                        { label: 'Last Fed', value: feederData.lastFed, icon: icons['clock'] }
-                    ].map((stat, index) => (
-                        <View key={index} style={styles.statItem}>
-                            <View style={styles.statIconContainer}>
-                                <Image source={stat.icon} style={[styles.statIcon, { tintColor: '#ffd28e' }]} />
+                    <View style={styles.statsGrid}>
+                        {[
+                            { label: 'Pets', value: feederData.uniquePetsFed, icon: icons['paw'] },
+                            { label: 'Today', value: feederData.feedingsToday, icon: icons['calendar'] },
+                            { label: 'Avg/Day', value: feederData.averageDailyFeedings, icon: icons['trending-up'] },
+                            { label: 'Last Fed', value: feederData.lastFed, icon: icons['clock'] }
+                        ].map((stat, index) => (
+                            <View key={index} style={styles.statItem}>
+                                <View style={styles.statIconContainer}>
+                                    <Image source={stat.icon} style={[styles.statIcon, { tintColor: '#e67c00' }]} />
+                                </View>
+                                <Text style={styles.statLabel}>{stat.label}</Text>
+                                <Text style={styles.statValue}>{stat.value}</Text>
                             </View>
-                            <Text style={styles.statLabel}>{stat.label}</Text>
-                            <Text style={styles.statValue}>{stat.value}</Text>
+                        ))}
+                    </View>
+                </View>
+
+                {/* Recent Activity Card */}
+                <View style={[styles.recentActivityCard, { marginBottom: 24 }]}>
+                    <View style={styles.recentActivityHeader}>
+                        <Image
+                            source={icons['notification-light']}
+                            style={[styles.recentActivityIcon, { tintColor: '#e67c00' }]}
+                        />
+                        <Text style={styles.recentActivityHeaderText}>Recent Activity</Text>
+                    </View>
+
+                    {feederData.notifications.map((item) => (
+                        <View key={item.id} style={styles.recentActivityItem}>
+                            <View style={styles.recentActivityDot} />
+                            <View style={styles.recentActivityContent}>
+                                <Text style={styles.recentActivityText}>{item.text}</Text>
+                                <Text style={styles.recentActivityTime}>{item.time}</Text>
+                            </View>
                         </View>
                     ))}
                 </View>
-            </View>
-
-            {/* Recent Activity Card */}
-            <View style={[styles.card, { marginBottom: 24 }]}>
-                <View style={styles.cardHeader}>
-                    <Image source={icons['notification-light']} style={[styles.icon, { tintColor: '#ffd28e' }]} />
-                    <Text style={styles.cardHeaderText}>Recent Activity</Text>
-                </View>
-
-                {feederData.notifications.map((item) => (
-                    <View key={item.id} style={styles.notificationItem}>
-                        <View style={styles.notificationDot} />
-                        <View style={styles.notificationContent}>
-                            <Text style={styles.notificationText}>{item.text}</Text>
-                            <Text style={styles.notificationTime}>{item.time}</Text>
-                        </View>
-                    </View>
-                ))}
-            </View>
-        </ScrollView>
+            </ScrollView>
+        </View>
     );
 }
 
 const styles = StyleSheet.create({
-    container: {
+    backgroundContainer: {
         flex: 1,
         backgroundColor: '#FFFBEB',
-        padding: 24,
-        paddingTop: 60,
-        marginBottom: 80,
+        position: 'relative',
     },
-    header: {
-        marginBottom: 24,
+    fixedHeader: {
+        paddingTop: 60,
+        paddingHorizontal: 24,
+        paddingBottom: 8,
+        backgroundColor: '#FFFBEB',
+        zIndex: 10,
+    },
+    container: {
+        flex: 1,
+        paddingHorizontal: 24,
+    },
+    scrollContent: {
+        paddingTop: 14,
+        paddingBottom: 90,
+    },
+    backgroundPaw: {
+        position: 'absolute',
+        width: 120,
+        height: 120,
+        opacity: 0.3,
+        tintColor: '#f7a75c',
+    },
+    paw1: {
+        top: 125,
+        left: -30,
+        transform: [{ rotate: '20deg' }],
+    },
+    paw2: {
+        bottom: 150,
+        right: -20,
+        transform: [{ rotate: '-15deg' }],
+    },
+    paw3: {
+        top: '40%',
+        right: 50,
+        transform: [{ rotate: '45deg' }],
+    },
+    paw4: {
+        top: '60%',
+        right: 300,
+        transform: [{ rotate: '45deg' }],
+    },
+    paw5: {
+        top: '14.4%',
+        right: 20,
+        transform: [{ rotate: '910deg' }],
     },
     headerTitle: {
-        fontSize: 32,
+        fontSize: 25,
         fontWeight: 'bold',
-        color: '#0f0d23',
+        color: '#000000',
     },
     headerSubtitle: {
         fontSize: 16,
-        color: '#6b7280',
+        color: '#c76b02',
         marginTop: 4,
+        fontStyle: 'italic',
     },
     topRow: {
         flexDirection: 'row',
@@ -186,23 +286,29 @@ const styles = StyleSheet.create({
         gap: 16,
     },
     card: {
-        backgroundColor: '#000000',
+        backgroundColor: '#ffffff',
         borderRadius: 20,
+        borderWidth: 1,
+        borderColor: '#e6be97',
         padding: 20,
         shadowColor: '#000',
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.2,
-        shadowRadius: 8,
-        elevation: 6,
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.05,
+        shadowRadius: 4,
+        elevation: 2,
     },
     smallCard: {
         flex: 1,
+        aspectRatio: 1,
         alignItems: 'center',
+        justifyContent: 'space-between',
+        paddingVertical: 12,
+        minHeight: 0,
     },
     cardHeader: {
         flexDirection: 'row',
         alignItems: 'center',
-        marginBottom: 16,
+        marginBottom: 12,
     },
     cardIcon: {
         width: 20,
@@ -210,15 +316,16 @@ const styles = StyleSheet.create({
         marginRight: 8,
     },
     cardHeaderText: {
-        fontSize: 18,
-        color: '#ffd28e',
+        fontSize: 16,
+        color: '#000000',
         fontWeight: '600',
         marginLeft: 8,
     },
     cardTitle: {
         fontSize: 16,
-        color: '#ffd28e',
+        color: '#000000',
         fontWeight: '600',
+        marginRight: 10,
     },
     icon: {
         width: 20,
@@ -226,23 +333,23 @@ const styles = StyleSheet.create({
     },
     circleWrapper: {
         alignItems: 'center',
-        marginTop: 8,
+        marginTop: 4,
     },
     circleContainer: {
-        width: 100,
-        height: 100,
+        width: 70,
+        height: 70,
         justifyContent: 'center',
         alignItems: 'center',
         position: 'relative',
-        marginBottom: 8,
+        marginBottom: 4,
     },
     circleBackground: {
         position: 'absolute',
         width: '100%',
         height: '100%',
         borderRadius: 50,
-        borderWidth: 6,
-        borderColor: '#2a2741',
+        borderWidth: 10,
+        borderColor: '#e0d6b7',
     },
     circleProgress: {
         position: 'absolute',
@@ -250,17 +357,12 @@ const styles = StyleSheet.create({
         height: '100%',
         borderRadius: 50,
     },
-    circleIcon: {
-        width: 24,
-        height: 24,
-    },
-    percentageText: {
-        fontSize: 18,
+    circlePercentage: {
+        fontSize: 15,
         fontWeight: 'bold',
-        marginTop: 8,
     },
     statusText: {
-        fontSize: 14,
+        fontSize: 12,
         fontWeight: '600',
         marginTop: 4,
     },
@@ -272,31 +374,35 @@ const styles = StyleSheet.create({
     },
     statItem: {
         width: '48%',
-        backgroundColor: '#1a1a1a',
+        backgroundColor: '#fcf4eb',
         borderRadius: 12,
+        borderWidth: 1,
+        borderColor: '#e67c00',
         padding: 16,
         alignItems: 'center',
     },
     statIconContainer: {
-        backgroundColor: '#2a2741',
-        width: 40,
-        height: 40,
+        backgroundColor: '#ffe699',
+        width: 0,
+        height: 0,
         borderRadius: 20,
         justifyContent: 'center',
         alignItems: 'center',
         marginBottom: 25,
     },
     statIcon: {
-        width: 18,
-        height: 18,
+        width: 28,
+        height: 28,
+        marginTop: 30,
     },
     statLabel: {
-        color: '#9ca3af',
+        color: '#000000',
         fontSize: 12,
         marginBottom: 4,
+        marginTop: 15,
     },
     statValue: {
-        color: '#ffd28e',
+        color: '#e67c00',
         fontSize: 18,
         fontWeight: '600',
     },
@@ -311,7 +417,7 @@ const styles = StyleSheet.create({
         width: 8,
         height: 8,
         borderRadius: 4,
-        backgroundColor: '#ffd28e',
+        backgroundColor: '#e67c00',
         marginRight: 12,
     },
     notificationContent: {
@@ -329,5 +435,62 @@ const styles = StyleSheet.create({
         color: '#9ca3af',
         fontSize: 12,
         marginLeft: 8,
-    }
+    },
+    recentActivityCard: {
+        backgroundColor: '#ffffff',
+        borderRadius: 16,
+        borderWidth: 1,
+        borderColor: '#e6be97',
+        padding: 16,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.05,
+        shadowRadius: 4,
+        elevation: 2,
+    },
+    recentActivityHeader: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginBottom: 12,
+    },
+    recentActivityIcon: {
+        width: 24,
+        height: 24,
+    },
+    recentActivityHeaderText: {
+        fontSize: 16,
+        fontWeight: '600',
+        color: '#000000',
+        marginLeft: 8,
+    },
+    recentActivityItem: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        paddingVertical: 12,
+        borderBottomWidth: 1,
+        borderBottomColor: '#f3f4f6',
+    },
+    recentActivityDot: {
+        width: 8,
+        height: 8,
+        borderRadius: 4,
+        backgroundColor: '#e67c00',
+        marginRight: 12,
+    },
+    recentActivityContent: {
+        flex: 1,
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+    },
+    recentActivityText: {
+        color: '#000000',
+        fontSize: 14,
+        flex: 1,
+    },
+    recentActivityTime: {
+        color: '#e67c00',
+        fontSize: 12,
+        marginLeft: 8,
+    },
 });

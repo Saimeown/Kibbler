@@ -1,17 +1,36 @@
 import { Stack } from "expo-router";
+import { AuthProvider } from '@/hooks/useAuth';
 import './globals.css';
 
 export default function RootLayout() {
     return (
-        <Stack>
-            <Stack.Screen
-                name="(tabs)" // Make sure this stays as the main tab navigation.
-                options={{ headerShown: false }}
-            />
-            <Stack.Screen
-                name="profile"
-                options={{ headerShown: false }}
-            />
-        </Stack>
+        <AuthProvider>
+            <Stack>
+                {/* Splash Screen - shown first */}
+                <Stack.Screen
+                    name="index"
+                    options={{ headerShown: false }}
+                />
+
+                {/* Login Screen */}
+                <Stack.Screen
+                    name="login"
+                    options={{ headerShown: false }}
+                />
+
+                {/* Main App Screens - protected routes */}
+                <Stack.Screen
+                    name="(tabs)"
+                    options={{ headerShown: false }}
+                />
+
+                <Stack.Screen
+                    name="profile"
+                    options={{ headerShown: false }}
+                />
+
+                {/* Add other screens here as needed */}
+            </Stack>
+        </AuthProvider>
     );
 }

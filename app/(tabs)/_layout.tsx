@@ -5,7 +5,7 @@ import { images } from '@/constants/images';
 import { icons } from '@/constants/icons';
 
 const { width } = Dimensions.get('window');
-const TAB_COUNT = 5;
+const TAB_COUNT = 4; // Updated to include the camera tab
 const TAB_WIDTH = (width - 40) / TAB_COUNT;
 
 type IconName =
@@ -42,7 +42,7 @@ const TabBar = ({ state, navigation }: any) => {
     return (
         <View style={{
             flexDirection: 'row',
-            backgroundColor: '#000000',
+            backgroundColor: '#c26204',
             borderRadius: 50,
             marginHorizontal: 20,
             marginBottom: 36,
@@ -52,7 +52,7 @@ const TabBar = ({ state, navigation }: any) => {
             left: 0,
             right: 0,
             borderWidth: 1,
-            borderColor: '#0f0d23',
+            borderColor: '#c26204',
             overflow: 'hidden',
         }}>
             <Animated.View
@@ -121,7 +121,6 @@ export default function TabsLayout() {
             }}
         >
             <Tabs.Screen name="index" />
-            <Tabs.Screen name="camera" />
             <Tabs.Screen name="notification" />
             <Tabs.Screen name="profile" />
             <Tabs.Screen name="settings" />

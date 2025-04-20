@@ -1,4 +1,3 @@
-// app/notification.tsx
 import { View, Text, StyleSheet, Image, StatusBar, ScrollView } from 'react-native';
 import React from 'react';
 import { icons } from '@/constants/icons';
@@ -39,18 +38,43 @@ export default function Notification() {
     const getColorForType = (type: string) => {
         switch (type) {
             case 'feeding':
-                return '#ffd28e';
+                return '#FFA726'; // Orange
             case 'warning':
-                return '#f59e0b';
+                return '#F59E0B'; // Amber
             case 'error':
-                return '#ef4444';
+                return '#EF4444'; // Red
             default:
-                return '#60a5fa';
+                return '#60A5FA'; // Blue
         }
     };
 
     return (
         <View style={styles.container}>
+            <Image
+                source={icons['paw']}
+                style={[styles.backgroundPaw, styles.paw1]}
+                resizeMode="contain"
+            />
+            <Image
+                source={icons['paw']}
+                style={[styles.backgroundPaw, styles.paw2]}
+                resizeMode="contain"
+            />
+            <Image
+                source={icons['paw']}
+                style={[styles.backgroundPaw, styles.paw3]}
+                resizeMode="contain"
+            />
+            <Image
+                source={icons['paw']}
+                style={[styles.backgroundPaw, styles.paw4]}
+                resizeMode="contain"
+            />
+            <Image
+                source={icons['paw']}
+                style={[styles.backgroundPaw, styles.paw5]}
+                resizeMode="contain"
+            />
             <StatusBar barStyle="dark-content" />
 
             <View style={styles.header}>
@@ -59,7 +83,7 @@ export default function Notification() {
 
             <ScrollView
                 contentContainerStyle={styles.scrollContainer}
-                showsVerticalScrollIndicator={false} // Hide scroll indicator
+                showsVerticalScrollIndicator={false}
             >
                 {notifications.map((notification) => (
                     <View
@@ -82,7 +106,10 @@ export default function Notification() {
                         </View>
                         <Text style={styles.notificationText}>{notification.text}</Text>
                         {!notification.read && (
-                            <View style={styles.unreadBadge}>
+                            <View style={[
+                                styles.unreadBadge,
+                                { backgroundColor: getColorForType(notification.type) }
+                            ]}>
                                 <Text style={styles.unreadBadgeText}>New</Text>
                             </View>
                         )}
@@ -97,42 +124,44 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#FFFBEB',
-        paddingHorizontal: 24,
+        paddingHorizontal: 16,
         paddingTop: 60,
-        paddingBottom: 100, // Add padding at the bottom to avoid tab bar overlap
+        paddingBottom: 24,
     },
     scrollContainer: {
         paddingBottom: 24,
     },
     header: {
         marginBottom: 24,
+        paddingHorizontal: 8,
     },
     headerTitle: {
-        fontSize: 32,
-        fontWeight: 'bold',
-        color: '#0f0d23',
+        fontSize: 25,
+        fontWeight: '700',
+        color: '#000000',
     },
     headerSubtitle: {
-        fontSize: 16,
-        color: '#6b7280',
+        fontSize: 14,
+        color: '#888',
         marginTop: 4,
     },
     notificationCard: {
-        backgroundColor: '#000000',
-        borderRadius: 16,
+        backgroundColor: '#FFFFFF',
+        borderRadius: 12,
         padding: 16,
         marginBottom: 12,
         borderLeftWidth: 4,
-        position: 'relative',
+        borderWidth: 1,
+        borderColor: '#fac99b',
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.2,
+        shadowOpacity: 0.05,
         shadowRadius: 4,
-        elevation: 3,
+        elevation: 2,
     },
     unreadNotification: {
         borderWidth: 1,
-        borderColor: '#ffd28e',
+        borderColor: '#FFA726',
     },
     notificationHeader: {
         flexDirection: 'row',
@@ -145,18 +174,18 @@ const styles = StyleSheet.create({
         marginRight: 8,
     },
     notificationTime: {
-        color: '#9ca3af',
+        color: '#888',
         fontSize: 12,
     },
     notificationText: {
-        color: '#e5e7eb',
+        color: '#000000',
         fontSize: 14,
+        lineHeight: 20,
     },
     unreadBadge: {
         position: 'absolute',
-        top: -0,
-        right: -0,
-        backgroundColor: '#ef4444',
+        top: 12,
+        right: 12,
         borderRadius: 12,
         paddingHorizontal: 6,
         paddingVertical: 2,
@@ -165,5 +194,37 @@ const styles = StyleSheet.create({
         color: 'white',
         fontSize: 10,
         fontWeight: 'bold',
+    },
+    backgroundPaw: {
+        position: 'absolute',
+        width: 120,
+        height: 120,
+        opacity: 0.3,
+        tintColor: '#f7a75c',
+    },
+    paw1: {
+        top: 125,
+        left: -30,
+        transform: [{ rotate: '20deg' }],
+    },
+    paw2: {
+        bottom: 150,
+        right: -20,
+        transform: [{ rotate: '-15deg' }],
+    },
+    paw3: {
+        top: '40%',
+        right: 50,
+        transform: [{ rotate: '45deg' }],
+    },
+    paw4: {
+        top: '60%',
+        right: 300,
+        transform: [{ rotate: '45deg' }],
+    },
+    paw5: {
+        top: '14.4%',
+        right: 20,
+        transform: [{ rotate: '910deg' }],
     },
 });

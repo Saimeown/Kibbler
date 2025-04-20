@@ -11,6 +11,7 @@ type RootStackParamList = {
         params: { mode: 'detection' | 'scheduled' };
     };
     profile: undefined;
+    login: undefined;
 };
 
 type SettingsNavigationProp = StackNavigationProp<RootStackParamList, '(tabs)'>;
@@ -186,6 +187,31 @@ export default function SettingsTab() {
 
     return (
         <View style={styles.container}>
+            <Image
+                source={icons['paw']}
+                style={[styles.backgroundPaw, styles.paw1]}
+                resizeMode="contain"
+            />
+            <Image
+                source={icons['paw']}
+                style={[styles.backgroundPaw, styles.paw2]}
+                resizeMode="contain"
+            />
+            <Image
+                source={icons['paw']}
+                style={[styles.backgroundPaw, styles.paw3]}
+                resizeMode="contain"
+            />
+            <Image
+                source={icons['paw']}
+                style={[styles.backgroundPaw, styles.paw4]}
+                resizeMode="contain"
+            />
+            <Image
+                source={icons['paw']}
+                style={[styles.backgroundPaw, styles.paw5]}
+                resizeMode="contain"
+            />
             <StatusBar barStyle="dark-content" />
             <View style={styles.header}>
                 <Text style={styles.headerTitle}>Settings</Text>
@@ -235,7 +261,14 @@ export default function SettingsTab() {
                         </View>
                     </View>
                 ))}
-                <TouchableOpacity style={styles.logoutButton}>
+                <TouchableOpacity
+                    style={styles.logoutButton}
+                    onPress={() => {
+                        // Handle logout logic here (e.g., clearing user data)
+                        // Redirect to the login screen
+                        navigation.navigate('login'); // Replace 'login' with your login screen's name
+                    }}
+                >
                     <Text style={styles.logoutText}>Log Out</Text>
                 </TouchableOpacity>
             </ScrollView>
@@ -256,13 +289,14 @@ const styles = StyleSheet.create({
         zIndex: 10,
     },
     headerTitle: {
-        fontSize: 32,
+        fontSize: 25,
         fontWeight: 'bold',
-        color: '#0f0d23',
+        color: '#000000',
     },
     scrollContainer: {
         paddingHorizontal: 24,
         paddingBottom: 80,
+        paddingTop: 10,
     },
     versionContainer: {
         alignItems: 'center',
@@ -344,9 +378,9 @@ const styles = StyleSheet.create({
         marginLeft: 40,
     },
     logoutButton: {
-        backgroundColor: 'transparent',
+        backgroundColor: 'black',
         borderWidth: 1,
-        borderColor: '#ef4444',
+        borderColor: '#f7c797',
         borderRadius: 12,
         padding: 16,
         alignItems: 'center',
@@ -354,8 +388,40 @@ const styles = StyleSheet.create({
         marginBottom: 54,
     },
     logoutText: {
-        color: '#ef4444',
+        color: '#f7c797',
         fontSize: 16,
-        fontWeight: '600',
+        fontWeight: '700',
+    },
+    backgroundPaw: {
+        position: 'absolute',
+        width: 120,
+        height: 120,
+        opacity: 0.3,
+        tintColor: '#fac491',
+    },
+    paw1: {
+        top: 125,
+        left: -30,
+        transform: [{ rotate: '20deg' }],
+    },
+    paw2: {
+        bottom: 150,
+        right: -20,
+        transform: [{ rotate: '-15deg' }],
+    },
+    paw3: {
+        top: '40%',
+        right: 50,
+        transform: [{ rotate: '45deg' }],
+    },
+    paw4: {
+        top: '60%',
+        right: 300,
+        transform: [{ rotate: '45deg' }],
+    },
+    paw5: {
+        top: '12.4%',
+        right: 20,
+        transform: [{ rotate: '910deg' }],
     },
 });

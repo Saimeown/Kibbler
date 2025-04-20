@@ -30,6 +30,31 @@ export default function Profile() {
 
     return (
         <View style={styles.container}>
+            <Image
+                source={icons['paw']}
+                style={[styles.backgroundPaw, styles.paw1]}
+                resizeMode="contain"
+            />
+            <Image
+                source={icons['paw']}
+                style={[styles.backgroundPaw, styles.paw2]}
+                resizeMode="contain"
+            />
+            <Image
+                source={icons['paw']}
+                style={[styles.backgroundPaw, styles.paw3]}
+                resizeMode="contain"
+            />
+            <Image
+                source={icons['paw']}
+                style={[styles.backgroundPaw, styles.paw4]}
+                resizeMode="contain"
+            />
+            <Image
+                source={icons['paw']}
+                style={[styles.backgroundPaw, styles.paw5]}
+                resizeMode="contain"
+            />
             <StatusBar barStyle="dark-content" />
 
             {/* Fixed Header */}
@@ -186,9 +211,9 @@ const styles = StyleSheet.create({
         zIndex: 10,
     },
     pageTitle: {
-        fontSize: 32,
+        fontSize: 25,
         fontWeight: 'bold',
-        color: '#0f0d23',
+        color: '#000000',
     },
     scrollContent: {
         paddingHorizontal: 24,
@@ -295,7 +320,7 @@ const styles = StyleSheet.create({
     },
     currentDeviceCard: {
         borderWidth: 1,
-        borderColor: '#ffd28e',
+        borderColor: 'orange',
     },
     deviceHeader: {
         flexDirection: 'row',
@@ -421,5 +446,37 @@ const styles = StyleSheet.create({
         width: 16,
         height: 16,
         tintColor: '#9ca3af',
+    },
+    backgroundPaw: {
+        position: 'absolute',
+        width: 120,
+        height: 120,
+        opacity: 0.3,
+        tintColor: '#f7a75c',
+    },
+    paw1: {
+        top: 125,
+        left: -30,
+        transform: [{ rotate: '20deg' }],
+    },
+    paw2: {
+        bottom: 150,
+        right: -20,
+        transform: [{ rotate: '-15deg' }],
+    },
+    paw3: {
+        top: '40%',
+        right: 50,
+        transform: [{ rotate: '45deg' }],
+    },
+    paw4: {
+        top: '60%',
+        right: 300,
+        transform: [{ rotate: '45deg' }],
+    },
+    paw5: {
+        top: '14.4%',
+        right: 20,
+        transform: [{ rotate: '910deg' }],
     },
 });
