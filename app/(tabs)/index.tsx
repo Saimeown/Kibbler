@@ -3,6 +3,7 @@ import React from 'react';
 import { icons } from '@/constants/icons';
 import { useAuth } from '@/hooks/useAuth';
 import { Redirect } from 'expo-router';
+import Svg, { Circle } from 'react-native-svg';
 
 type CircularProgressProps = {
     percentage: number;
@@ -51,37 +52,36 @@ export default function Index() {
     };
 
     const CircularProgress = ({ percentage, color, label }: CircularProgressProps) => {
-        const rotation = -90 + (percentage * 3.6);
-        const secondaryRotation = percentage > 50 ? 180 : 0;
-
+        const radius = 35;
+        const circumference = 2 * Math.PI * radius;
+        const strokeDashoffset = ((100) / 39) * circumference;
         return (
             <View style={styles.circleWrapper}>
                 <View style={styles.circleContainer}>
-                    <View style={styles.circleBackground} />
-                    <View style={[
-                        styles.circleProgress,
-                        {
-                            borderColor: color,
-                            transform: [{ rotate: `${rotation}deg` }],
-                            borderWidth: 10,
-                            borderLeftColor: percentage > 50 ? color : 'transparent',
-                            borderBottomColor: 'transparent',
-                            borderRightColor: 'transparent'
-                        }
-                    ]} />
-                    {percentage > 50 && (
-                        <View style={[
-                            styles.circleProgress,
-                            {
-                                borderColor: color,
-                                transform: [{ rotate: `${secondaryRotation}deg` }],
-                                borderWidth: 10,
-                                borderLeftColor: 'transparent',
-                                borderBottomColor: 'transparent',
-                                borderRightColor: 'transparent'
-                            }
-                        ]} />
-                    )}
+                    <Svg width={radius * 2} height={radius * 2} style={styles.circleSvg}>
+                        {/* Background circle */}
+                        <Circle
+                            cx={radius}
+                            cy={radius}
+                            r={radius - 10}
+                            stroke="#e0d6b7"
+                            strokeWidth={10}
+                            fill="transparent"
+                        />
+                        {/* Progress circle */}
+                        <Circle
+                            cx={radius}
+                            cy={radius}
+                            r={radius - 10}
+                            stroke={color}
+                            strokeWidth={10}
+                            fill="transparent"
+                            strokeDasharray={circumference}
+                            strokeDashoffset={strokeDashoffset}
+                            strokeLinecap="round"
+                            transform={`rotate(-90 ${radius} ${radius})`}
+                        />
+                    </Svg>
                     <Text style={[styles.circlePercentage, { color }]}>{percentage}%</Text>
                 </View>
                 <Text style={[styles.statusText, { color: percentage < 20 ? '#ef4444' : color }]}>
@@ -335,13 +335,20 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         marginTop: 4,
     },
+    circlePercentage: {
+        fontSize: 15,
+        fontWeight: 'bold',
+    },
+    circleSvg: {
+        position: 'absolute',
+    },
     circleContainer: {
         width: 70,
         height: 70,
         justifyContent: 'center',
         alignItems: 'center',
         position: 'relative',
-        marginBottom: 4,
+        marginBottom: 7,
     },
     circleBackground: {
         position: 'absolute',
@@ -350,16 +357,6 @@ const styles = StyleSheet.create({
         borderRadius: 50,
         borderWidth: 10,
         borderColor: '#e0d6b7',
-    },
-    circleProgress: {
-        position: 'absolute',
-        width: '100%',
-        height: '100%',
-        borderRadius: 50,
-    },
-    circlePercentage: {
-        fontSize: 15,
-        fontWeight: 'bold',
     },
     statusText: {
         fontSize: 12,

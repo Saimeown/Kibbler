@@ -18,6 +18,18 @@ export default function LoginScreen() {
     const pawScale = useRef(new Animated.Value(0.8)).current;
     const foodBowlAnim = useRef(new Animated.Value(0)).current;
 
+    // Subtitle animation
+    const [currentSubtitle, setCurrentSubtitle] = useState(0);
+    const subtitles = [
+        "Whiskers Approved. Worries Removed.",
+        "Every pet deserves a full bowl.",
+        "The future of pet care is before us.",
+        "No paw left unfed.",
+        "When you can't be there, Kibbler is.",
+        "Feed them right, day or night."
+    ];
+    const subtitleAnim = useRef(new Animated.Value(1)).current; // Start at 1 for immediate visibility
+
     useEffect(() => {
         // Entry animations
         Animated.parallel([
@@ -44,6 +56,27 @@ export default function LoginScreen() {
                 useNativeDriver: false,
             })
         ]).start();
+
+        // Subtitle rotation animation
+        const subtitleInterval = setInterval(() => {
+            // Fade out current subtitle
+            Animated.timing(subtitleAnim, {
+                toValue: 0,
+                duration: 500,
+                useNativeDriver: true,
+            }).start(() => {
+                // Change subtitle when completely faded out
+                setCurrentSubtitle((prev) => (prev + 1) % subtitles.length);
+                // Fade in new subtitle
+                Animated.timing(subtitleAnim, {
+                    toValue: 1,
+                    duration: 500,
+                    useNativeDriver: true,
+                }).start();
+            });
+        }, 3000); // Change subtitle every 3 seconds
+
+        return () => clearInterval(subtitleInterval);
     }, []);
 
     const handleLogin = async () => {
@@ -78,6 +111,11 @@ export default function LoginScreen() {
             setIsLoading(false);
         }
     };
+
+    const subtitleOpacity = subtitleAnim.interpolate({
+        inputRange: [0, 1],
+        outputRange: [0, 1]
+    });
 
     return (
         <View style={styles.container}>
@@ -143,7 +181,11 @@ export default function LoginScreen() {
                 opacity: fadeAnim,
                 transform: [{ translateY: slideUpAnim }]
             }]}>
-                <Text style={styles.subtitle}>Whiskers Approved. Worries Removed.</Text>
+                <Animated.Text style={[styles.subtitle, {
+                    opacity: subtitleOpacity
+                }]}>
+                    {subtitles[currentSubtitle]}
+                </Animated.Text>
 
                 <View style={styles.inputContainer}>
                     <Text style={styles.inputLabel}>Username</Text>
@@ -213,6 +255,7 @@ const styles = StyleSheet.create({
         fontSize: 28,
         fontWeight: 'bold',
         color: '#e67c00',
+        fontFamily: 'georgia',
     },
     formContainer: {
         width: '100%',

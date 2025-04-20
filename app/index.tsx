@@ -1,6 +1,6 @@
 // app/index.tsx
 import { View, Text, Image, Animated, Easing, StyleSheet } from 'react-native';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react'; // Added useState
 import { useRouter } from 'expo-router';
 
 export default function SplashScreen() {
@@ -10,7 +10,27 @@ export default function SplashScreen() {
     const bowlFillAnim = useRef(new Animated.Value(0)).current;
     const pawPosition = useRef(new Animated.Value(0)).current;
 
+    // Added state for current subtitle
+    const [currentSubtitle, setCurrentSubtitle] = useState(0);
+    const subtitles = [
+        "Every pet deserves a full bowl.",
+        "Whiskers approved, Worries removed.",
+        "The future of pet care is before us.",
+        "You may be far, but care doesn't have to be.",
+        "When you can't be there, Kibbler is.",
+        "Feed them right, day or night."
+    ];
+
     useEffect(() => {
+        // Subtitle change listener
+        const subtitleListener = bowlFillAnim.addListener(({ value }) => {
+            // Change subtitle based on fill progress
+            const newSubtitle = Math.floor(value * (subtitles.length - 1));
+            if (newSubtitle !== currentSubtitle) {
+                setCurrentSubtitle(newSubtitle);
+            }
+        });
+
         // Sequence of animations
         Animated.sequence([
             // Fade in and scale up logo
@@ -58,14 +78,17 @@ export default function SplashScreen() {
 
         const timer = setTimeout(() => {
             router.replace('/login');
-        }, 4300); // Total animation duration
+        }, 4500); // Total animation duration
 
-        return () => clearTimeout(timer);
+        return () => {
+            clearTimeout(timer);
+            bowlFillAnim.removeListener(subtitleListener); // Clean up listener
+        };
     }, []);
 
     const bowlHeight = bowlFillAnim.interpolate({
         inputRange: [0, 1],
-        outputRange: ['0%', '100%'], // Fill up to 80% of bowl
+        outputRange: ['0%', '100%'],
     });
 
     return (
@@ -105,7 +128,11 @@ export default function SplashScreen() {
             <Animated.Text style={[styles.title, { opacity: fadeAnim, fontFamily: 'georgia' }]}>
                 Kibbler
             </Animated.Text>
-            <Text style={styles.subtitle}>Version 1.1</Text>
+
+            {/* Changing Subtitle */}
+            <Animated.Text style={[styles.subtitle, { opacity: fadeAnim }]}>
+                {subtitles[currentSubtitle]}
+            </Animated.Text>
         </View>
     );
 }
@@ -157,5 +184,7 @@ const styles = StyleSheet.create({
         fontSize: 16,
         color: '#c76b02',
         marginTop: 8,
+        textAlign: 'center',
+        paddingHorizontal: 20,
     },
 });

@@ -6,11 +6,13 @@ import {
     ScrollView,
     TouchableOpacity,
     Alert,
+    Image
 } from 'react-native';
 import { useRoute, RouteProp } from '@react-navigation/native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Picker } from '@react-native-picker/picker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { icons } from '@/constants/icons';
 
 type RootStackParamList = {
     DispenseSettings: {
@@ -102,6 +104,28 @@ export default function DispenseSettings() {
 
     return (
         <View style={styles.container}>
+            {/* Subtle background elements */}
+            <Image
+                source={icons['paw']}
+                style={[styles.backgroundPaw, styles.paw1]}
+                resizeMode="contain"
+            />
+            <Image
+                source={icons['paw']}
+                style={[styles.backgroundPaw, styles.paw2]}
+                resizeMode="contain"
+            />
+            <Image
+                source={icons['food-bowl']}
+                style={[styles.foodBowl, styles.bowl1]}
+                resizeMode="contain"
+            />
+            <Image
+                source={icons['food-bowl']}
+                style={[styles.foodBowl, styles.bowl2]}
+                resizeMode="contain"
+            />
+
             <ScrollView contentContainerStyle={styles.scrollContainer}>
                 <Text style={styles.header}>
                     {mode === 'detection' ? 'Detection-Based' : 'Scheduled'}
@@ -258,7 +282,7 @@ const styles = StyleSheet.create({
         paddingBottom: 80,
     },
     header: {
-        fontSize: 30,
+        fontSize: 25,
         fontWeight: 'bold',
         color: '#0f0d23',
         marginBottom: 40,
@@ -267,6 +291,8 @@ const styles = StyleSheet.create({
         marginBottom: 24,
         backgroundColor: 'white',
         borderRadius: 12,
+        borderWidth: 1,
+        borderColor: '#f58702',
         padding: 16,
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 2 },
@@ -319,9 +345,11 @@ const styles = StyleSheet.create({
         marginTop: 16,
     },
     saveButton: {
-        backgroundColor: '#000000',
+        backgroundColor: '#ffffff',
         padding: 16,
-        borderRadius: 50,
+        borderRadius: 20,
+        borderWidth: 1,
+        borderColor: '#f58702',
         alignItems: 'center',
         marginTop: 16,
         width: 200,
@@ -329,8 +357,42 @@ const styles = StyleSheet.create({
         marginRight: 'auto',
     },
     saveButtonText: {
-        color: '#ffd28e',
+        color: '#f58702',
         fontSize: 16,
         fontWeight: '600',
+    },
+    backgroundPaw: {
+        position: 'absolute',
+        width: 120,
+        height: 120,
+        opacity: 0.1,
+        tintColor: '#e67c00',
+    },
+    paw1: {
+        top: 50,
+        left: -30,
+        transform: [{ rotate: '20deg' }],
+    },
+    paw2: {
+        bottom: 50,
+        right: -20,
+        transform: [{ rotate: '-15deg' }],
+    },
+    foodBowl: {
+        position: 'absolute',
+        width: 100,
+        height: 100,
+        opacity: 0.1,
+        tintColor: '#e67c00',
+    },
+    bowl1: {
+        top: '40%',
+        right: 50,
+        transform: [{ rotate: '45deg' }],
+    },
+    bowl2: {
+        top: '70%',
+        left: 30,
+        transform: [{ rotate: '-30deg' }],
     },
 });
